@@ -174,8 +174,9 @@ public class PerfectoIOSBasicTest {
         }
 
         if (user != null && pass != null) {
-            typeInto(user, "your.user@stratis.com");
-            typeInto(pass, "SuperSecret123!");
+            typeInto(user, "rajanikanth.bathula@mystratis.com");
+            typeInto(pass, "Notallowed@123");
+            System.out.println("Login credentials filled successfully");
             try { driver.hideKeyboard(); } catch (Exception ignore) {}
             return true;
         }
