@@ -43,6 +43,7 @@ public class PerfectoIOSBasicTest {
         caps.setCapability("appium:platformVersion", p.getProperty("perfecto.ios.os.version"));
         caps.setCapability("appium:app", p.getProperty("perfecto.ios.app.path"));
         caps.setCapability("appium:bundleId", p.getProperty("perfecto.ios.bundle.id"));
+        caps.setCapability("appium:autoAcceptAlerts", true);
         caps.setCapability("appium:newCommandTimeout", 180);
         caps.setCapability("appium:noReset", true);
 

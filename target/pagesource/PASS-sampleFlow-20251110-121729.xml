@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AppiumAUT>
+  <XCUIElementTypeApplication type="XCUIElementTypeApplication" name="eStratis" label="eStratis" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" identifier="">
+    <XCUIElementTypeWindow type="XCUIElementTypeWindow" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" identifier="">
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" identifier="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" identifier="">
+          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" identifier="">
+            <XCUIElementTypeImage type="XCUIElementTypeImage" name="background_blue_password" enabled="true" visible="false" accessible="false" x="0" y="0" width="402" height="360" index="0" identifier="background_blue_password"/>
+            <XCUIElementTypeScrollView type="XCUIElementTypeScrollView" enabled="true" visible="true" accessible="false" x="0" y="62" width="402" height="812" index="1" identifier="">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="62" width="402" height="812" index="0" identifier="">
+                <XCUIElementTypeImage type="XCUIElementTypeImage" name="stratisLogo" enabled="true" visible="true" accessible="false" x="101" y="102" width="200" height="37" index="0" identifier="stratisLogo"/>
+                <XCUIElementTypeImage type="XCUIElementTypeImage" name="background_ilustration" enabled="true" visible="true" accessible="false" x="23" y="173" width="334" height="262" index="1" identifier="background_ilustration"/>
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="23" y="362" width="356" height="481" index="2" identifier="">
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Log into your account" name="Log into your account" label="Log into your account" enabled="true" visible="true" accessible="true" x="54" y="397" width="294" height="24" index="0" identifier=""/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Username" name="Username" label="Username" enabled="true" visible="true" accessible="true" x="54" y="446" width="294" height="22" index="1" identifier=""/>
+                  <XCUIElementTypeTextField type="XCUIElementTypeTextField" value="Please enter your username" label="" enabled="true" visible="true" accessible="true" x="54" y="478" width="294" height="50" index="2" identifier=""/>
+                  <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Password" name="Password" label="Password" enabled="true" visible="true" accessible="true" x="54" y="538" width="294" height="22" index="3" identifier=""/>
+                  <XCUIElementTypeSecureTextField type="XCUIElementTypeSecureTextField" value="Please enter your password" label="" enabled="true" visible="true" accessible="true" x="54" y="570" width="294" height="50" index="4" identifier="">
+                    <XCUIElementTypeButton type="XCUIElementTypeButton" name="icon hide preview " label="icon hide preview " enabled="true" visible="true" accessible="false" x="310" y="582" width="26" height="26" index="0" identifier=""/>
+                  </XCUIElementTypeSecureTextField>
+                  <XCUIElementTypeButton type="XCUIElementTypeButton" name="Forgot my password" label="Forgot my password" enabled="true" visible="true" accessible="true" x="208" y="641" width="134" height="22" index="5" identifier="">
+                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Forgot my password" name="Forgot my password" label="Forgot my password" enabled="true" visible="true" accessible="false" x="208" y="642" width="134" height="20" index="0" identifier=""/>
+                  </XCUIElementTypeButton>
+                  <XCUIElementTypeButton type="XCUIElementTypeButton" name="Log into my account" label="Log into my account" enabled="true" visible="true" accessible="true" x="55" y="683" width="292" height="55" index="6" identifier="">
+                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Log into my account" name="Log into my account" label="Log into my account" enabled="true" visible="true" accessible="false" x="125" y="699" width="152" height="23" index="0" identifier=""/>
+                  </XCUIElementTypeButton>
+                  <XCUIElementTypeButton type="XCUIElementTypeButton" name="Create new account" label="Create new account" enabled="true" visible="true" accessible="true" x="55" y="748" width="292" height="55" index="7" identifier="">
+                    <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Create new account" name="Create new account" label="Create new account" enabled="true" visible="true" accessible="false" x="127" y="764" width="148" height="23" index="0" identifier=""/>
+                  </XCUIElementTypeButton>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+              <XCUIElementTypeOther type="XCUIElementTypeOther" value="0%" name="Vertical scroll bar, 1 page" label="Vertical scroll bar, 1 page" enabled="true" visible="true" accessible="false" x="369" y="90" width="30" height="728" index="1" identifier="">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="396" y="808" width="3" height="7" index="0" identifier=""/>
+              </XCUIElementTypeOther>
+              <XCUIElementTypeOther type="XCUIElementTypeOther" value="0%" name="Horizontal scroll bar, 1 page" label="Horizontal scroll bar, 1 page" enabled="true" visible="true" accessible="false" x="56" y="841" width="290" height="30" index="2" identifier="">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="336" y="868" width="7" height="3" index="0" identifier=""/>
+              </XCUIElementTypeOther>
+              <XCUIElementTypeOther type="XCUIElementTypeOther" value="0%" name="Vertical scroll bar, 1 page" label="Vertical scroll bar, 1 page" enabled="true" visible="true" accessible="false" x="369" y="90" width="30" height="728" index="3" identifier="">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="396" y="808" width="3" height="7" index="0" identifier=""/>
+              </XCUIElementTypeOther>
+              <XCUIElementTypeOther type="XCUIElementTypeOther" value="0%" name="Horizontal scroll bar, 1 page" label="Horizontal scroll bar, 1 page" enabled="true" visible="true" accessible="false" x="56" y="841" width="290" height="30" index="4" identifier="">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="336" y="868" width="7" height="3" index="0" identifier=""/>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeScrollView>
+          </XCUIElementTypeOther>
+        </XCUIElementTypeOther>
+      </XCUIElementTypeOther>
+    </XCUIElementTypeWindow>
+  </XCUIElementTypeApplication>
+</AppiumAUT>
