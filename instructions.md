@@ -6,9 +6,23 @@ This project contains automated tests for iOS applications using Appium and Test
 ## Prerequisites
 
 ### 1. Software Requirements
-- **Java 11** or higher
+- **Java 17** (Temurin/Adoptium recommended)
 - **Apache Maven 3.6+**
 - **IDE** (IntelliJ IDEA, Eclipse, or VS Code with Java extensions)
+
+#### JDK Setup (Important)
+Install Temurin/Adoptium JDK 17 and configure environment variables:
+```bash
+# Set JAVA_HOME (adjust path as needed)
+setx JAVA_HOME "C:\Program Files\Eclipse Adoptium\jdk-17"
+setx PATH "%JAVA_HOME%\bin;%PATH%"
+
+# Verify installation
+java -version
+```
+You should see: `openjdk version "17.0.x"`
+
+**Note**: Use JDK 17 to run, but Maven compiles to Java 11 bytecode for compatibility.
 
 ### 2. Perfecto Cloud Setup
 - Active Perfecto account with cloud access
@@ -17,10 +31,12 @@ This project contains automated tests for iOS applications using Appium and Test
 
 ### 3. Project Dependencies
 All dependencies are managed through Maven and defined in `pom.xml`:
-- Selenium WebDriver (4.25.0)
-- Appium Java Client (9.2.3)
+- Selenium WebDriver (4.8.3) - Stable version for Perfecto
+- Appium Java Client (8.5.1) - Stable version for Perfecto  
 - TestNG (7.10.2)
 - Apache Commons IO (2.16.1)
+
+**Note**: These specific versions (Selenium 4.8.3 + Appium 8.5.1) are proven stable with Perfecto cloud and avoid element-mapping issues.
 
 ## Configuration
 
@@ -63,6 +79,15 @@ mvn test -Dtest=PerfectoIOSBasicTest
 #### Run with TestNG Suite
 ```bash
 mvn test -DsuiteXmlFile=testng.xml
+```
+
+#### Clean Cache and Rebuild (Recommended after version changes)
+```bash
+# Clean local Maven repository cache
+mvn -U -q dependency:purge-local-repository
+
+# Clean and rebuild with TestNG suite
+mvn -q clean test -DsuiteXmlFile=testng.xml
 ```
 
 #### Compile Only (for testing compilation)
