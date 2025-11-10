@@ -2,7 +2,6 @@ package com.stratis.tests;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.ios.IOSDriver;
-import io.appium.java_client.remote.options.BaseOptions;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.OutputType;
@@ -53,7 +52,7 @@ public class PerfectoIOSBasicTest {
         perfectoOptions.put("description", "Java/TestNG/Appium iOS on Perfecto");
         caps.setCapability("perfecto:options", perfectoOptions);
 
-        driver = new IOSDriver(new URL(PERFECTO_HUB), new BaseOptions<>().amend(caps));
+        driver = new IOSDriver(new URL(PERFECTO_HUB), caps);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
     }
 
