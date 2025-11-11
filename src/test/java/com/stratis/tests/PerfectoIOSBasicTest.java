@@ -38,7 +38,11 @@ public class PerfectoIOSBasicTest {
         MutableCapabilities caps = new MutableCapabilities();
         caps.setCapability("platformName", "iOS");
         caps.setCapability("appium:automationName", "XCUITest");
-        caps.setCapability("appium:udid", p.getProperty("perfecto.ios.device.id"));
+        // Only set device ID if it's not empty
+        String deviceId = p.getProperty("perfecto.ios.device.id");
+        if (deviceId != null && !deviceId.trim().isEmpty()) {
+            caps.setCapability("appium:udid", deviceId);
+        }
         caps.setCapability("appium:deviceName", p.getProperty("perfecto.ios.device.model"));
         caps.setCapability("appium:platformVersion", p.getProperty("perfecto.ios.os.version"));
         caps.setCapability("appium:app", p.getProperty("perfecto.ios.app.path"));
@@ -102,18 +106,36 @@ public class PerfectoIOSBasicTest {
     }
 
     private void captureScreenshot(String tag) throws IOException {
-        File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-        String ts = java.time.LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
-        File dest = new File("target/screenshots/" + tag + "-" + ts + ".png");
-        dest.getParentFile().mkdirs();
-        FileUtils.copyFile(src, dest);
+        if (driver != null) {
+            try {
+                File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                String ts = java.time.LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+                File dest = new File("target/screenshots/" + tag + "-" + ts + ".png");
+                dest.getParentFile().mkdirs();
+                FileUtils.copyFile(src, dest);
+                System.out.println("Screenshot captured: " + dest.getAbsolutePath());
+            } catch (Exception e) {
+                System.out.println("Failed to capture screenshot: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Cannot capture screenshot - driver is null");
+        }
     }
 
     private void savePageSource(String tag) throws IOException {
-        String ts = java.time.LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
-        File dest = new File("target/pagesource/" + tag + "-" + ts + ".xml");
-        dest.getParentFile().mkdirs();
-        FileUtils.writeStringToFile(dest, driver.getPageSource(), "UTF-8");
+        if (driver != null) {
+            try {
+                String ts = java.time.LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
+                File dest = new File("target/pagesource/" + tag + "-" + ts + ".xml");
+                dest.getParentFile().mkdirs();
+                FileUtils.writeStringToFile(dest, driver.getPageSource(), "UTF-8");
+                System.out.println("Page source saved: " + dest.getAbsolutePath());
+            } catch (Exception e) {
+                System.out.println("Failed to save page source: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Cannot save page source - driver is null");
+        }
     }
 
     // --- Context helpers ---
