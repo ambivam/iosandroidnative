@@ -1,6 +1,7 @@
 package com.stratis.pages;
 
 import com.stratis.base.BasePage;
+import io.appium.java_client.AppiumBy;
 import io.appium.java_client.ios.IOSDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -68,35 +69,51 @@ public class LoginPage extends BasePage {
         return tryPerfectoVisualClick("Log into my account");
     }
     
-    // Native Implementation Methods
+    // Native Implementation Methods - Based on working PerfectoIOSBasicTest
     private boolean tryFillNative(String username, String password) {
         try {
-            logger.info("Trying native login form fill");
+            logger.info("Trying native login form fill using proven strategies");
             
-            // Strategy A: Find by placeholder text
-            WebElement usernameField = findByiOSClassChain(
-                "**/XCUIElementTypeTextField[`value CONTAINS[c] 'Please enter your username' OR value CONTAINS[c] 'username'`]"
+            // Strategy A: placeholder contains (from working test)
+            WebElement usernameField = pollForElement(
+                AppiumBy.iOSClassChain("**/XCUIElementTypeTextField[`value CONTAINS[c] 'Please enter your username' OR value CONTAINS[c] 'username'`]"),
+                10
+            );
+            WebElement passwordField = pollForElement(
+                AppiumBy.iOSClassChain("**/XCUIElementTypeSecureTextField[`value CONTAINS[c] 'Please enter your password' OR value CONTAINS[c] 'password'`]"),
+                10
             );
             
-            WebElement passwordField = findByiOSClassChain(
-                "**/XCUIElementTypeSecureTextField[`value CONTAINS[c] 'Please enter your password' OR value CONTAINS[c] 'password'`]"
-            );
-            
-            // Strategy B: Fallback to first available fields
-            if (usernameField == null && !textFields.isEmpty()) {
-                usernameField = textFields.get(0);
+            // Strategy B: first visible textfield + securetextfield (fallback from working test)
+            if (usernameField == null) {
+                java.util.List<WebElement> textFields = driver.findElements(AppiumBy.className("XCUIElementTypeTextField"));
+                if (!textFields.isEmpty()) {
+                    usernameField = textFields.get(0);
+                    logger.info("Using first text field as username field");
+                }
             }
-            
-            if (passwordField == null && !secureTextFields.isEmpty()) {
-                passwordField = secureTextFields.get(0);
+            if (passwordField == null) {
+                java.util.List<WebElement> secureFields = driver.findElements(AppiumBy.className("XCUIElementTypeSecureTextField"));
+                if (!secureFields.isEmpty()) {
+                    passwordField = secureFields.get(0);
+                    logger.info("Using first secure text field as password field");
+                }
             }
             
             if (usernameField != null && passwordField != null) {
-                safeType(usernameField, username);
-                safeType(passwordField, password);
-                hideKeyboard();
-                logger.info("Successfully filled native login form");
+                // Use the proven typeInto method from working test
+                typeInto(usernameField, username);
+                typeInto(passwordField, password);
+                logger.info("Login credentials filled successfully using proven method");
+                
+                try { 
+                    driver.hideKeyboard(); 
+                } catch (Exception ignore) {
+                    logger.debug("Keyboard hide not needed or failed");
+                }
                 return true;
+            } else {
+                logger.warn("Could not find username or password fields");
             }
             
         } catch (Exception e) {
@@ -105,39 +122,48 @@ public class LoginPage extends BasePage {
         return false;
     }
     
+    // Proven typeInto method from working PerfectoIOSBasicTest
+    private void typeInto(WebElement element, String text) {
+        try {
+            element.click();
+            try { 
+                element.clear(); 
+            } catch (Exception ignore) {
+                logger.debug("Element clear failed or not needed");
+            }
+            element.sendKeys(text);
+            logger.info("Successfully typed into element using proven method");
+        } catch (Exception e) {
+            logger.error("Failed to type into element: " + e.getMessage());
+            throw e;
+        }
+    }
+    
     private boolean tryClickLoginNative() {
         try {
-            logger.info("Trying native login button click");
+            logger.info("Trying native login button click using proven strategies");
             
-            // Strategy A: Exact text match
-            WebElement loginButton = findByiOSNsPredicate(
-                "(type == 'XCUIElementTypeButton' OR type == 'XCUIElementTypeOther') AND " +
-                "(label == 'Log into my account' OR name == 'Log into my account')"
+            // Button by exact text, then a relaxed contains fallback (from working test)
+            WebElement loginButton = pollForElement(
+                AppiumBy.iOSNsPredicateString("(type == 'XCUIElementTypeButton' OR type == 'XCUIElementTypeOther') AND " +
+                                              "(label == 'Log into my account' OR name == 'Log into my account')"),
+                8
             );
             
-            // Strategy B: Contains text match
             if (loginButton == null) {
-                loginButton = findByiOSNsPredicate(
-                    "(type == 'XCUIElementTypeButton' OR type == 'XCUIElementTypeOther') AND " +
-                    "(label CONTAINS[c] 'Log into' OR name CONTAINS[c] 'Log into')"
+                loginButton = pollForElement(
+                    AppiumBy.iOSNsPredicateString("(type == 'XCUIElementTypeButton' OR type == 'XCUIElementTypeOther') AND " +
+                                                  "(label CONTAINS[c] 'Log into' OR name CONTAINS[c] 'Log into')"),
+                    8
                 );
             }
             
-            // Strategy C: Generic button fallback
-            if (loginButton == null && !buttons.isEmpty()) {
-                for (WebElement button : buttons) {
-                    String text = button.getAttribute("label");
-                    if (text != null && (text.toLowerCase().contains("log") || text.toLowerCase().contains("sign"))) {
-                        loginButton = button;
-                        break;
-                    }
-                }
-            }
-            
             if (loginButton != null) {
-                safeClick(loginButton);
-                logger.info("Successfully clicked native login button");
+                loginButton.click();
+                logger.info("Successfully clicked native login button using proven method");
                 return true;
+            } else {
+                logger.warn("Could not find login button");
             }
             
         } catch (Exception e) {
@@ -192,32 +218,42 @@ public class LoginPage extends BasePage {
         return false;
     }
     
-    // Perfecto Visual Methods
+    // Perfecto Visual Methods - Based on working PerfectoIOSBasicTest
     private boolean tryPerfectoVisualLogin(String username, String password) {
         try {
-            logger.info("Trying Perfecto visual login");
+            logger.info("Trying Perfecto visual login using proven method");
             
-            // Click username field
-            if (!tryPerfectoVisualClick("Username")) {
-                return false;
-            }
+            // Verify username field is visible
+            java.util.Map<String, Object> params = new java.util.HashMap<>();
+            params.put("content", "Username");
+            driver.executeScript("mobile:checkpoint:text", params);
             
-            // Type username
-            if (!tryPerfectoVisualType(username)) {
-                return false;
-            }
+            // Click username field by visible text
+            params.clear();
+            params.put("label", "Username");
+            driver.executeScript("mobile:button-text:click", params);
+            
+            // Type username into focused field
+            java.util.Map<String, Object> typeParams = new java.util.HashMap<>();
+            typeParams.put("text", username);
+            driver.executeScript("mobile:type", typeParams);
             
             // Click password field
-            if (!tryPerfectoVisualClick("Password")) {
-                return false;
-            }
+            params.clear();
+            params.put("label", "Password");
+            driver.executeScript("mobile:button-text:click", params);
             
-            // Type password
-            if (!tryPerfectoVisualType(password)) {
-                return false;
-            }
+            // Type password into focused field
+            typeParams.clear();
+            typeParams.put("text", password);
+            driver.executeScript("mobile:type", typeParams);
             
-            logger.info("Successfully filled login using Perfecto visual");
+            // Click login button
+            params.clear();
+            params.put("label", "Log into my account");
+            driver.executeScript("mobile:button-text:click", params);
+            
+            logger.info("Successfully completed Perfecto visual login using proven method");
             return true;
             
         } catch (Exception e) {
