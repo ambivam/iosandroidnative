@@ -118,10 +118,12 @@ public class PerfectoIOSBasicTest {
 
     // --- Context helpers ---
     private void switchToNative() {
+        System.out.println("Switching to NATIVE_APP context");
         try { driver.context("NATIVE_APP"); } catch (Exception ignore) {}
     }
 
     private boolean switchToAnyWebview() {
+        System.out.println("Switching to any WEBVIEW context");
         try {
             java.util.Set<String> ctxs = driver.getContextHandles();
             System.out.println("Available contexts: " + ctxs);

@@ -2,31 +2,31 @@
 <testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2025-11-10T13:34:37 IST" name="Surefire suite" finished-at="2025-11-10T13:36:15 IST" duration-ms="97903">
+  <suite started-at="2025-11-11T00:22:38 IST" name="Surefire suite" finished-at="2025-11-11T00:24:16 IST" duration-ms="98165">
     <groups>
     </groups>
-    <test started-at="2025-11-10T13:34:37 IST" name="Surefire test" finished-at="2025-11-10T13:36:15 IST" duration-ms="97903">
+    <test started-at="2025-11-11T00:22:38 IST" name="Surefire test" finished-at="2025-11-11T00:24:16 IST" duration-ms="98165">
       <class name="com.stratis.tests.PerfectoIOSBasicTest">
-        <test-method is-config="true" signature="setUp()[pri:0, instance:com.stratis.tests.PerfectoIOSBasicTest@6580cfdd]" started-at="2025-11-10T13:34:37 IST" name="setUp" finished-at="2025-11-10T13:35:01 IST" duration-ms="23140" status="PASS">
+        <test-method is-config="true" signature="setUp()[pri:0, instance:com.stratis.tests.PerfectoIOSBasicTest@9225652]" started-at="2025-11-11T00:22:38 IST" name="setUp" finished-at="2025-11-11T00:23:02 IST" duration-ms="23748" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setUp -->
-        <test-method signature="loginFlow()[pri:0, instance:com.stratis.tests.PerfectoIOSBasicTest@6580cfdd]" started-at="2025-11-10T13:35:01 IST" name="loginFlow" finished-at="2025-11-10T13:35:20 IST" duration-ms="18985" status="PASS">
+        <test-method signature="loginFlow()[pri:0, instance:com.stratis.tests.PerfectoIOSBasicTest@9225652]" started-at="2025-11-11T00:23:02 IST" name="loginFlow" finished-at="2025-11-11T00:23:17 IST" duration-ms="15226" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- loginFlow -->
-        <test-method is-config="true" signature="afterEach(org.testng.ITestResult)[pri:0, instance:com.stratis.tests.PerfectoIOSBasicTest@6580cfdd]" started-at="2025-11-10T13:35:20 IST" name="afterEach" finished-at="2025-11-10T13:35:22 IST" duration-ms="2670" status="PASS">
+        <test-method is-config="true" signature="afterEach(org.testng.ITestResult)[pri:0, instance:com.stratis.tests.PerfectoIOSBasicTest@9225652]" started-at="2025-11-11T00:23:17 IST" name="afterEach" finished-at="2025-11-11T00:23:19 IST" duration-ms="1467" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA[[TestResult name=loginFlow status=SUCCESS method=PerfectoIOSBasicTest.loginFlow()[pri:0, instance:com.stratis.tests.PerfectoIOSBasicTest@6580cfdd] output={null}]]]>
+                <![CDATA[[TestResult name=loginFlow status=SUCCESS method=PerfectoIOSBasicTest.loginFlow()[pri:0, instance:com.stratis.tests.PerfectoIOSBasicTest@9225652] output={null}]]]>
               </value>
             </param>
           </params>
           <reporter-output>
           </reporter-output>
         </test-method> <!-- afterEach -->
-        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.stratis.tests.PerfectoIOSBasicTest@6580cfdd]" started-at="2025-11-10T13:35:22 IST" name="tearDown" finished-at="2025-11-10T13:36:15 IST" duration-ms="53066" status="PASS">
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:com.stratis.tests.PerfectoIOSBasicTest@9225652]" started-at="2025-11-11T00:23:19 IST" name="tearDown" finished-at="2025-11-11T00:24:16 IST" duration-ms="57650" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDown -->
