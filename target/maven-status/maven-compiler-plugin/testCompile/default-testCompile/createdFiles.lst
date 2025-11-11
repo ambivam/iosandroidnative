@@ -1,1 +1,8 @@
+com\stratis\runners\TestRunner.class
+com\stratis\base\DriverManager.class
+com\stratis\stepdefinitions\Hooks.class
 com\stratis\tests\PerfectoIOSBasicTest.class
+com\stratis\base\BasePage.class
+com\stratis\pages\LoginPage.class
+com\stratis\runners\SmokeTestRunner.class
+com\stratis\stepdefinitions\LoginSteps.class
