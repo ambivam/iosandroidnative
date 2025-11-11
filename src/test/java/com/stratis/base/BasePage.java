@@ -108,6 +108,7 @@ public abstract class BasePage {
             driver.hideKeyboard();
         } catch (Exception e) {
             logger.debug("Keyboard hide failed or not needed: " + e.getMessage());
+            
         }
     }
     

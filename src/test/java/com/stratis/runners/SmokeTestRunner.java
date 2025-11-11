@@ -9,9 +9,9 @@ import org.testng.annotations.DataProvider;
     glue = {"com.stratis.stepdefinitions"},
     plugin = {
         "pretty",
-        "html:target/cucumber-reports/smoke",
-        "json:target/cucumber-reports/smoke/Cucumber.json",
-        "junit:target/cucumber-reports/smoke/Cucumber.xml",
+        "html:target/cucumber-reports/smoke/html-report.html",
+        "json:target/cucumber-reports/smoke/json/Cucumber.json",
+        "junit:target/cucumber-reports/smoke/xml/Cucumber.xml",
         "com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"
     },
     monochrome = true,
