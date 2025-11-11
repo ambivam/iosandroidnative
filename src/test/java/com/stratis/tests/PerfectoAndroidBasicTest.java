@@ -1,11 +1,16 @@
 package com.stratis.tests;
 
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+import com.aventstack.extentreports.reporter.configuration.Theme;
+import com.stratis.base.DriverManager;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebElement;
@@ -16,17 +21,15 @@ import org.testng.annotations.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 public class PerfectoAndroidBasicTest {
 
     private AndroidDriver driver;
-    private Properties p = new Properties();
+    private static ExtentReports extent;
+    private ExtentTest test;
 
     // Android-specific element locators using PageFactory
     @AndroidFindBy(xpath = "//android.widget.EditText[contains(@resource-id,'username') or contains(@text,'Username') or contains(@hint,'Username')]")
@@ -44,43 +47,42 @@ public class PerfectoAndroidBasicTest {
     @AndroidFindBy(xpath = "//android.widget.TextView[@text='Welcome']")
     private WebElement welcomeMessage;
 
+    @BeforeSuite
+    public void setUpExtentReports() {
+        ExtentSparkReporter sparkReporter = new ExtentSparkReporter("target/extent-reports/AndroidTestReport.html");
+        sparkReporter.config().setDocumentTitle("Android Test Automation Report");
+        sparkReporter.config().setReportName("eStratis Android Test Results");
+        sparkReporter.config().setTheme(Theme.STANDARD);
+        
+        extent = new ExtentReports();
+        extent.attachReporter(sparkReporter);
+        extent.setSystemInfo("Platform", "Android");
+        extent.setSystemInfo("Environment", "Perfecto Cloud");
+        extent.setSystemInfo("Test Type", "TestNG");
+    }
+
     @BeforeClass
-    public void setUp() throws MalformedURLException, IOException {
-        p.load(PerfectoAndroidBasicTest.class.getClassLoader().getResourceAsStream("perfecto-android.properties"));
-        final String PERFECTO_HUB = "https://stratis-1.perfectomobile.com/nexperience/perfectomobile/wd/hub";
-        final String TOKEN = p.getProperty("perfecto.token");
-        if (TOKEN == null || TOKEN.isEmpty() || TOKEN.equals("YOUR_PERFECTO_TOKEN_HERE")) {
-            throw new IllegalStateException("Perfecto token not configured in perfecto-android.properties file");
-        }
-
-        MutableCapabilities caps = new MutableCapabilities();
-        caps.setCapability("platformName", "Android");
-        caps.setCapability("appium:automationName", "Appium");
-        caps.setCapability("appium:platformVersion", p.getProperty("perfecto.android.os.version"));
-        caps.setCapability("appium:manufacturer", p.getProperty("perfecto.android.manufacturer"));
-        caps.setCapability("appium:model", p.getProperty("perfecto.android.model"));
-        caps.setCapability("appium:deviceName", p.getProperty("perfecto.android.device.id"));
-        caps.setCapability("appium:app", p.getProperty("perfecto.android.app.path"));
-        caps.setCapability("appium:appPackage", p.getProperty("perfecto.android.app.package"));
-        caps.setCapability("appium:newCommandTimeout", 180);
-        caps.setCapability("appium:noReset", true);
-
-        Map<String, Object> perfectoOptions = new HashMap<>();
-        perfectoOptions.put("securityToken", TOKEN);
-        perfectoOptions.put("scriptName", "eStratis Android Smoke");
-        perfectoOptions.put("description", "Java/TestNG/Appium Android on Perfecto");
-        caps.setCapability("perfecto:options", perfectoOptions);
-
-        driver = new AndroidDriver(new URL(PERFECTO_HUB), caps);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+    public void setUp() throws MalformedURLException {
+        // Initialize Android driver using unified DriverManager
+        DriverManager.initializeDriver("Android");
+        driver = DriverManager.getAndroidDriver();
         
         // Initialize PageFactory elements
         PageFactory.initElements(new AppiumFieldDecorator(driver), this);
     }
 
+    @BeforeMethod
+    public void setUpTest() {
+        test = extent.createTest("Android Login Flow Test");
+        test.log(Status.INFO, "Starting Android login test");
+    }
+
     @Test
     public void loginFlow() throws Exception {
+        test.log(Status.INFO, "Starting Android login flow test");
+        
         // 0) Save page source early to confirm what the hierarchy looks like
+        test.log(Status.INFO, "Capturing initial screenshots and page source");
         captureScreenshot("before-login");
         savePageSource("before-login");
 
@@ -129,11 +131,26 @@ public class PerfectoAndroidBasicTest {
         String name = (result.isSuccess() ? "PASS" : "FAIL") + "-" + result.getMethod().getMethodName();
         captureScreenshot(name);
         savePageSource(name);
+        
+        // Log test result to Extent Reports
+        if (result.isSuccess()) {
+            test.log(Status.PASS, "Android login test completed successfully");
+        } else {
+            test.log(Status.FAIL, "Android login test failed: " + result.getThrowable().getMessage());
+        }
     }
 
     @AfterClass(alwaysRun = true)
     public void tearDown() {
-        if (driver != null) try { driver.quit(); } catch (Exception ignore) {}
+        DriverManager.quitDriver();
+    }
+
+    @AfterSuite(alwaysRun = true)
+    public void tearDownExtentReports() {
+        if (extent != null) {
+            extent.flush();
+            System.out.println("Extent Report generated: target/extent-reports/AndroidTestReport.html");
+        }
     }
 
     private void captureScreenshot(String tag) throws IOException {

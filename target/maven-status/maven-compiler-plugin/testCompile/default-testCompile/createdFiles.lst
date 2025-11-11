@@ -1,5 +1,6 @@
 com\stratis\runners\TestRunner.class
 com\stratis\base\DriverManager.class
+com\stratis\runners\AndroidTestRunner.class
 com\stratis\stepdefinitions\Hooks.class
 com\stratis\tests\PerfectoAndroidBasicTest.class
 com\stratis\tests\PerfectoIOSBasicTest.class

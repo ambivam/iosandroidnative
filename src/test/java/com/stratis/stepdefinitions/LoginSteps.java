@@ -18,7 +18,7 @@ public class LoginSteps {
     public void the_user_is_on_the_estratis_login_page() throws IOException {
         logger.info("Verifying user is on eStratis login page");
         
-        loginPage = new LoginPage(DriverManager.getDriver());
+        loginPage = new LoginPage(DriverManager.getIOSDriver());
         loginPage.captureScreenshot("login-page-loaded");
         loginPage.savePageSource("login-page-loaded");
         

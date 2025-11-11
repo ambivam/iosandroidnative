@@ -89,6 +89,12 @@ Run with:
 mvn clean test -DsuiteXmlFile=testng-android.xml
 ```
 
+mvn clean test "-DsuiteXmlFile=testngAndroid.xml"
+
+mvn clean test "-DsuiteXmlFile=./testngAndroid.xml"
+
+mvn clean test -Dsurefire.suiteXmlFiles=testngAndroid.xml
+
 ### Method 3: IDE Execution
 
 #### IntelliJ IDEA

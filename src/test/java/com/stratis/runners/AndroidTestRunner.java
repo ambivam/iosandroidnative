@@ -9,16 +9,16 @@ import org.testng.annotations.DataProvider;
     glue = {"com.stratis.stepdefinitions"},
     plugin = {
         "pretty",
-        "html:target/cucumber-reports/html-report.html",
-        "json:target/cucumber-reports/json/Cucumber.json",
-        "junit:target/cucumber-reports/xml/Cucumber.xml",
+        "html:target/cucumber-reports/android-html-report.html",
+        "json:target/cucumber-reports/android-json/Cucumber.json",
+        "junit:target/cucumber-reports/android-xml/Cucumber.xml",
         "com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"
     },
     monochrome = true,
     publish = true,
-    tags = "@ios and (@smoke or @login)"
+    tags = "@android and (@smoke or @login)"
 )
-public class TestRunner extends AbstractTestNGCucumberTests {
+public class AndroidTestRunner extends AbstractTestNGCucumberTests {
     
     @Override
     @DataProvider(parallel = false)
