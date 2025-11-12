@@ -253,3 +253,9 @@ perfecto-ios-automation/
 ---
 
 **Ready to test!** Execute `mvn clean test` to start your iOS automation journey on Perfecto cloud.
+
+
+
+mvn clean test -Dtest=SmokeTestRunner -Dcucumber.filter.tags="@android"
+
+mvn clean test -Dtest=SmokeTestRunner
