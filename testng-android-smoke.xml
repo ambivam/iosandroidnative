@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="eStratis Android Smoke Test Suite" verbose="1">
+    <test name="Android Smoke Tests">
+        <classes>
+            <class name="com.stratis.runners.AndroidSmokeTestRunner"/>
+        </classes>
+    </test>
+</suite>

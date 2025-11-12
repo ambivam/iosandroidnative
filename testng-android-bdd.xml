@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="eStratis Android BDD Test Suite" verbose="1">
+    
+    <parameter name="platform" value="android"/>
+    <parameter name="environment" value="perfecto"/>
+    
+    <test name="Android Smoke Tests" preserve-order="true">
+        <classes>
+            <class name="com.stratis.runners.AndroidSmokeTestRunner"/>
+        </classes>
+    </test>
+    
+    <test name="All Android Login Tests" preserve-order="true">
+        <classes>
+            <class name="com.stratis.runners.AndroidTestRunner"/>
+        </classes>
+    </test>
+    
+</suite>

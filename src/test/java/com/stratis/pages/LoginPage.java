@@ -2,7 +2,7 @@ package com.stratis.pages;
 
 import com.stratis.base.BasePage;
 import io.appium.java_client.AppiumBy;
-import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -11,30 +11,43 @@ import java.util.List;
 
 public class LoginPage extends BasePage {
     
-    // Page Elements using different locator strategies
+    // iOS Page Elements
     @FindBy(className = "XCUIElementTypeTextField")
-    private List<WebElement> textFields;
+    private List<WebElement> iOSTextFields;
     
     @FindBy(className = "XCUIElementTypeSecureTextField")
-    private List<WebElement> secureTextFields;
+    private List<WebElement> iOSSecureTextFields;
     
     @FindBy(className = "XCUIElementTypeButton")
-    private List<WebElement> buttons;
+    private List<WebElement> iOSButtons;
     
-    public LoginPage(IOSDriver driver) {
+    // Android Page Elements
+    @FindBy(className = "android.widget.EditText")
+    private List<WebElement> androidEditTexts;
+    
+    @FindBy(className = "android.widget.Button")
+    private List<WebElement> androidButtons;
+    
+    public LoginPage(AppiumDriver driver) {
         super(driver);
     }
     
     // Login Actions
     public boolean fillLoginCredentials(String username, String password) {
-        logger.info("Attempting to fill login credentials");
+        logger.info("Attempting to fill login credentials for platform: " + (isAndroid() ? "Android" : "iOS"));
         
         // Always start in native context
         switchToNative();
         
-        // Try native approach first
-        if (tryFillNative(username, password)) {
-            return true;
+        // Try platform-specific native approach first
+        if (isAndroid()) {
+            if (tryFillAndroidNative(username, password)) {
+                return true;
+            }
+        } else {
+            if (tryFillIOSNative(username, password)) {
+                return true;
+            }
         }
         
         // Try webview approach if native fails
@@ -50,11 +63,17 @@ public class LoginPage extends BasePage {
     }
     
     public boolean clickLoginButton() {
-        logger.info("Attempting to click login button");
+        logger.info("Attempting to click login button for platform: " + (isAndroid() ? "Android" : "iOS"));
         
-        // Try native login button click
-        if (tryClickLoginNative()) {
-            return true;
+        // Try platform-specific native login button click
+        if (isAndroid()) {
+            if (tryClickAndroidLoginNative()) {
+                return true;
+            }
+        } else {
+            if (tryClickIOSLoginNative()) {
+                return true;
+            }
         }
         
         // Try webview login button click
@@ -69,8 +88,84 @@ public class LoginPage extends BasePage {
         return tryPerfectoVisualClick("Log into my account");
     }
     
-    // Native Implementation Methods - Based on working PerfectoIOSBasicTest
-    private boolean tryFillNative(String username, String password) {
+    // Android Native Implementation Methods
+    private boolean tryFillAndroidNative(String username, String password) {
+        try {
+            logger.info("Trying Android native login form fill");
+            
+            // Strategy A: Android-specific XPath locators (from memory)
+            WebElement usernameField = pollForElement(
+                By.xpath("//android.widget.EditText[contains(@resource-id,'username') or contains(@text,'Username') or contains(@hint,'Username')]"),
+                10
+            );
+            WebElement passwordField = pollForElement(
+                By.xpath("//android.widget.EditText[contains(@resource-id,'password') or contains(@text,'Password') or contains(@hint,'Password')]"),
+                10
+            );
+            
+            // Strategy B: Generic EditText fallback
+            if (usernameField == null || passwordField == null) {
+                List<WebElement> editTexts = driver.findElements(By.className("android.widget.EditText"));
+                if (editTexts.size() >= 2) {
+                    usernameField = editTexts.get(0);
+                    passwordField = editTexts.get(1);
+                    logger.info("Using generic EditText elements for Android login");
+                }
+            }
+            
+            if (usernameField != null && passwordField != null) {
+                typeInto(usernameField, username);
+                typeInto(passwordField, password);
+                logger.info("Android login credentials filled successfully");
+                
+                // Hide keyboard for Android
+                hideKeyboard();
+                return true;
+            } else {
+                logger.warn("Could not find Android username or password fields");
+            }
+            
+        } catch (Exception e) {
+            logger.error("Android native login form fill failed: " + e.getMessage());
+        }
+        return false;
+    }
+    
+    private boolean tryClickAndroidLoginNative() {
+        try {
+            logger.info("Trying Android native login button click");
+            
+            // Android login button locators (from memory)
+            WebElement loginButton = pollForElement(
+                By.xpath("//android.widget.Button[contains(@text,'Login') or contains(@text,'Sign In') or contains(@resource-id,'login')]"),
+                8
+            );
+            
+            // Fallback to any button
+            if (loginButton == null) {
+                List<WebElement> buttons = driver.findElements(By.className("android.widget.Button"));
+                if (!buttons.isEmpty()) {
+                    loginButton = buttons.get(0);
+                    logger.info("Using first available Android button");
+                }
+            }
+            
+            if (loginButton != null) {
+                loginButton.click();
+                logger.info("Successfully clicked Android login button");
+                return true;
+            } else {
+                logger.warn("Could not find Android login button");
+            }
+            
+        } catch (Exception e) {
+            logger.error("Android native login button click failed: " + e.getMessage());
+        }
+        return false;
+    }
+    
+    // iOS Native Implementation Methods - Based on working PerfectoIOSBasicTest
+    private boolean tryFillIOSNative(String username, String password) {
         try {
             logger.info("Trying native login form fill using proven strategies");
             
@@ -104,16 +199,13 @@ public class LoginPage extends BasePage {
                 // Use the proven typeInto method from working test
                 typeInto(usernameField, username);
                 typeInto(passwordField, password);
-                logger.info("Login credentials filled successfully using proven method");
+                logger.info("iOS login credentials filled successfully using proven method");
                 
-                try { 
-                    driver.hideKeyboard(); 
-                } catch (Exception ignore) {
-                    logger.debug("Keyboard hide not needed or failed");
-                }
+                // Hide keyboard for iOS
+                hideKeyboard();
                 return true;
             } else {
-                logger.warn("Could not find username or password fields");
+                logger.warn("Could not find iOS username or password fields");
             }
             
         } catch (Exception e) {
@@ -139,7 +231,7 @@ public class LoginPage extends BasePage {
         }
     }
     
-    private boolean tryClickLoginNative() {
+    private boolean tryClickIOSLoginNative() {
         try {
             logger.info("Trying native login button click using proven strategies");
             
@@ -265,11 +357,16 @@ public class LoginPage extends BasePage {
     // Validation Methods
     public boolean isLoginPageDisplayed() {
         try {
-            // Check for username field presence
-            WebElement usernameField = findByClassName("XCUIElementTypeTextField");
-            WebElement passwordField = findByClassName("XCUIElementTypeSecureTextField");
-            
-            return usernameField != null && passwordField != null;
+            if (isAndroid()) {
+                // Check for Android login fields
+                WebElement usernameField = findByClassName("android.widget.EditText");
+                return usernameField != null;
+            } else {
+                // Check for iOS login fields
+                WebElement usernameField = findByClassName("XCUIElementTypeTextField");
+                WebElement passwordField = findByClassName("XCUIElementTypeSecureTextField");
+                return usernameField != null && passwordField != null;
+            }
         } catch (Exception e) {
             logger.error("Failed to verify login page display: " + e.getMessage());
             return false;

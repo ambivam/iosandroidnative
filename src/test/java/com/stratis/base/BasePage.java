@@ -1,6 +1,8 @@
 package com.stratis.base;
 
 import io.appium.java_client.AppiumBy;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -21,11 +23,11 @@ import java.util.Set;
 
 public abstract class BasePage {
     
-    protected IOSDriver driver;
+    protected AppiumDriver driver;
     protected WebDriverWait wait;
     protected static final Logger logger = LogManager.getLogger(BasePage.class);
     
-    public BasePage(IOSDriver driver) {
+    public BasePage(AppiumDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         PageFactory.initElements(driver, this);
@@ -35,7 +37,11 @@ public abstract class BasePage {
     protected void switchToNative() {
         logger.info("Switching to NATIVE_APP context");
         try {
-            driver.context("NATIVE_APP");
+            if (driver instanceof IOSDriver) {
+                ((IOSDriver) driver).context("NATIVE_APP");
+            } else if (driver instanceof AndroidDriver) {
+                ((AndroidDriver) driver).context("NATIVE_APP");
+            }
         } catch (Exception e) {
             logger.warn("Failed to switch to native context: " + e.getMessage());
         }
@@ -44,13 +50,25 @@ public abstract class BasePage {
     protected boolean switchToAnyWebview() {
         logger.info("Switching to any WEBVIEW context");
         try {
-            Set<String> contexts = driver.getContextHandles();
-            logger.info("Available contexts: " + contexts);
-            for (String context : contexts) {
-                if (context.startsWith("WEBVIEW")) {
-                    driver.context(context);
-                    logger.info("Switched to context: " + context);
-                    return true;
+            Set<String> contexts = null;
+            if (driver instanceof IOSDriver) {
+                contexts = ((IOSDriver) driver).getContextHandles();
+            } else if (driver instanceof AndroidDriver) {
+                contexts = ((AndroidDriver) driver).getContextHandles();
+            }
+            
+            if (contexts != null) {
+                logger.info("Available contexts: " + contexts);
+                for (String context : contexts) {
+                    if (context.startsWith("WEBVIEW")) {
+                        if (driver instanceof IOSDriver) {
+                            ((IOSDriver) driver).context(context);
+                        } else if (driver instanceof AndroidDriver) {
+                            ((AndroidDriver) driver).context(context);
+                        }
+                        logger.info("Switched to context: " + context);
+                        return true;
+                    }
                 }
             }
         } catch (Exception e) {
@@ -105,10 +123,13 @@ public abstract class BasePage {
     
     protected void hideKeyboard() {
         try {
-            driver.hideKeyboard();
+            if (driver instanceof IOSDriver) {
+                ((IOSDriver) driver).hideKeyboard();
+            } else if (driver instanceof AndroidDriver) {
+                ((AndroidDriver) driver).hideKeyboard();
+            }
         } catch (Exception e) {
             logger.debug("Keyboard hide failed or not needed: " + e.getMessage());
-            
         }
     }
     
@@ -157,7 +178,7 @@ public abstract class BasePage {
         }
     }
     
-    // Common iOS Locator Strategies
+    // Common Locator Strategies
     protected WebElement findByAccessibilityId(String accessibilityId) {
         return pollForElement(AppiumBy.accessibilityId(accessibilityId), 10);
     }
@@ -166,11 +187,30 @@ public abstract class BasePage {
         return pollForElement(AppiumBy.className(className), 10);
     }
     
+    // iOS-specific Locator Strategies
     protected WebElement findByiOSClassChain(String classChain) {
         return pollForElement(AppiumBy.iOSClassChain(classChain), 10);
     }
     
     protected WebElement findByiOSNsPredicate(String predicate) {
         return pollForElement(AppiumBy.iOSNsPredicateString(predicate), 10);
+    }
+    
+    // Android-specific Locator Strategies
+    protected WebElement findByAndroidUIAutomator(String uiAutomatorText) {
+        return pollForElement(AppiumBy.androidUIAutomator(uiAutomatorText), 10);
+    }
+    
+    protected WebElement findByAndroidDataMatcher(String dataMatcherText) {
+        return pollForElement(AppiumBy.androidDataMatcher(dataMatcherText), 10);
+    }
+    
+    // Platform detection helper
+    protected boolean isAndroid() {
+        return driver instanceof AndroidDriver;
+    }
+    
+    protected boolean isIOS() {
+        return driver instanceof IOSDriver;
     }
 }

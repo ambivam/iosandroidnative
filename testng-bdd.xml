@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="eStratis iOS BDD Test Suite" verbose="1">
+    
+    <parameter name="browser" value="ios"/>
+    <parameter name="environment" value="perfecto"/>
+    
+    <test name="Smoke Tests" preserve-order="true">
+        <classes>
+            <class name="com.stratis.runners.SmokeTestRunner"/>
+        </classes>
+    </test>
+    
+    <test name="All Login Tests" preserve-order="true">
+        <classes>
+            <class name="com.stratis.runners.TestRunner"/>
+        </classes>
+    </test>
+    
+</suite>

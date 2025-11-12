@@ -6,8 +6,15 @@ Feature: eStratis Login Functionality
   Background:
     Given the user is on the eStratis login page
 
-  @smoke @login @positive
-  Scenario: Successful login with valid credentials
+  @ios @smoke @login @positive
+  Scenario: Successful login with valid credentials on iOS
+    Given the user has valid eStratis credentials
+    When the user enters username "rajanikanth.bathula@mystratis.com" and password "Notallowed@123"
+    And the user clicks the login button
+    Then the user should be successfully logged in
+
+  @android @smoke @login @positive
+  Scenario: Successful login with valid credentials on Android
     Given the user has valid eStratis credentials
     When the user enters username "rajanikanth.bathula@mystratis.com" and password "Notallowed@123"
     And the user clicks the login button

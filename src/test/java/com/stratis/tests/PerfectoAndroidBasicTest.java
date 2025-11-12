@@ -12,6 +12,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+import com.aventstack.extentreports.reporter.configuration.Theme;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +32,8 @@ public class PerfectoAndroidBasicTest {
 
     private AndroidDriver driver;
     private Properties p = new Properties();
+    private static ExtentReports extent;
+    private ExtentTest test;
 
     // Android-specific element locators using PageFactory
     @AndroidFindBy(xpath = "//android.widget.EditText[contains(@resource-id,'username') or contains(@text,'Username') or contains(@hint,'Username')]")
@@ -43,6 +50,26 @@ public class PerfectoAndroidBasicTest {
 
     @AndroidFindBy(xpath = "//android.widget.TextView[@text='Welcome']")
     private WebElement welcomeMessage;
+
+    @BeforeSuite
+    public void setUpExtentReports() {
+        ExtentSparkReporter sparkReporter = new ExtentSparkReporter("target/extent-reports/AndroidTestReport.html");
+        sparkReporter.config().setTheme(Theme.STANDARD);
+        sparkReporter.config().setDocumentTitle("Android Test Report");
+        sparkReporter.config().setReportName("Perfecto Android Automation Report");
+        
+        extent = new ExtentReports();
+        extent.attachReporter(sparkReporter);
+        extent.setSystemInfo("Platform", "Android");
+        extent.setSystemInfo("Framework", "TestNG + Appium");
+        extent.setSystemInfo("Environment", "Perfecto Cloud");
+    }
+
+    @BeforeMethod
+    public void setUpTest(java.lang.reflect.Method method) {
+        test = extent.createTest(method.getName());
+        test.log(Status.INFO, "Starting test: " + method.getName());
+    }
 
     @BeforeClass
     public void setUp() throws MalformedURLException, IOException {
@@ -80,48 +107,73 @@ public class PerfectoAndroidBasicTest {
 
     @Test
     public void loginFlow() throws Exception {
-        // 0) Save page source early to confirm what the hierarchy looks like
-        captureScreenshot("before-login");
-        savePageSource("before-login");
+        test.log(Status.INFO, "Starting Android login flow test");
+        
+        try {
+            // 0) Save page source early to confirm what the hierarchy looks like
+            test.log(Status.INFO, "Capturing initial page state");
+            captureScreenshot("before-login");
+            savePageSource("before-login");
 
-        // 1) Always start in NATIVE_APP
-        switchToNative();
+            // 1) Always start in NATIVE_APP
+            test.log(Status.INFO, "Switching to native context");
+            switchToNative();
 
-        // 2) Try PageFactory elements first
-        if (tryFillWithPageFactory()) {
-            tapLoginWithPageFactory();
-            captureScreenshot("after-login-tap-pagefactory");
-            return;
-        }
-
-        // 3) Try robust native locators as fallback
-        if (tryFillNative()) {
-            tapLoginNative();
-            captureScreenshot("after-login-tap-native");
-            return;
-        }
-
-        // 4) If not found natively, try WEBVIEW
-        if (switchToAnyWebview()) {
-            if (tryFillWebView()) {
-                tapLoginWebView();
-                captureScreenshot("after-login-tap-webview");
-                // switch back if you need native again
-                switchToNative();
+            // 2) Try PageFactory elements first
+            test.log(Status.INFO, "Attempting login with PageFactory elements");
+            if (tryFillWithPageFactory()) {
+                tapLoginWithPageFactory();
+                captureScreenshot("after-login-tap-pagefactory");
+                test.log(Status.PASS, "Login successful using PageFactory elements");
+                generateCucumberReport("PASS", "Login successful using PageFactory elements");
                 return;
             }
-        }
 
-        // 5) Last resort: try Perfecto visual fallback
-        switchToNative();
-        if (tryPerfectoVisualLogin()) {
-            captureScreenshot("after-login-tap-visual");
-            return;
-        }
+            // 3) Try robust native locators as fallback
+            test.log(Status.INFO, "Attempting login with native locators");
+            if (tryFillNative()) {
+                tapLoginNative();
+                captureScreenshot("after-login-tap-native");
+                test.log(Status.PASS, "Login successful using native locators");
+                generateCucumberReport("PASS", "Login successful using native locators");
+                return;
+            }
 
-        // 6) Nothing matched: fail with helpful context
-        throw new RuntimeException("Could not locate username/password in NATIVE, WEBVIEW, or VISUAL context. " +
-                "Check latest target/pagesource/*.xml and contexts printed in logs.");
+            // 4) If not found natively, try WEBVIEW
+            test.log(Status.INFO, "Attempting login with WebView context");
+            if (switchToAnyWebview()) {
+                if (tryFillWebView()) {
+                    tapLoginWebView();
+                    captureScreenshot("after-login-tap-webview");
+                    // switch back if you need native again
+                    switchToNative();
+                    test.log(Status.PASS, "Login successful using WebView context");
+                    generateCucumberReport("PASS", "Login successful using WebView context");
+                    return;
+                }
+            }
+
+            // 5) Last resort: try Perfecto visual fallback
+            test.log(Status.INFO, "Attempting login with Perfecto visual commands");
+            switchToNative();
+            if (tryPerfectoVisualLogin()) {
+                captureScreenshot("after-login-tap-visual");
+                test.log(Status.PASS, "Login successful using Perfecto visual commands");
+                generateCucumberReport("PASS", "Login successful using Perfecto visual commands");
+                return;
+            }
+
+            // 6) Nothing matched: fail with helpful context
+            test.log(Status.FAIL, "All login strategies failed");
+            generateCucumberReport("FAIL", "All login strategies failed");
+            throw new RuntimeException("Could not locate username/password in NATIVE, WEBVIEW, or VISUAL context. " +
+                    "Check latest target/pagesource/*.xml and contexts printed in logs.");
+                    
+        } catch (Exception e) {
+            test.log(Status.FAIL, "Test failed with exception: " + e.getMessage());
+            generateCucumberReport("FAIL", "Test failed with exception: " + e.getMessage());
+            throw e;
+        }
     }
 
     @AfterMethod(alwaysRun = true)
@@ -129,11 +181,101 @@ public class PerfectoAndroidBasicTest {
         String name = (result.isSuccess() ? "PASS" : "FAIL") + "-" + result.getMethod().getMethodName();
         captureScreenshot(name);
         savePageSource(name);
+        
+        // Update Extent Reports
+        if (result.isSuccess()) {
+            test.log(Status.PASS, "Test completed successfully");
+        } else {
+            test.log(Status.FAIL, "Test failed: " + result.getThrowable().getMessage());
+        }
     }
 
     @AfterClass(alwaysRun = true)
     public void tearDown() {
         if (driver != null) try { driver.quit(); } catch (Exception ignore) {}
+    }
+    
+    @AfterSuite
+    public void tearDownExtentReports() {
+        if (extent != null) {
+            extent.flush();
+        }
+    }
+    
+    // Cucumber-style report generation method
+    private void generateCucumberReport(String status, String message) {
+        try {
+            // Create Cucumber-style JSON report
+            String timestamp = java.time.LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String cucumberJson = String.format(
+                "{\n" +
+                "  \"keyword\": \"Scenario\",\n" +
+                "  \"name\": \"Android Login Test\",\n" +
+                "  \"line\": 1,\n" +
+                "  \"description\": \"\",\n" +
+                "  \"id\": \"android-login-test\",\n" +
+                "  \"type\": \"scenario\",\n" +
+                "  \"steps\": [\n" +
+                "    {\n" +
+                "      \"keyword\": \"Given \",\n" +
+                "      \"name\": \"the user is on the login page\",\n" +
+                "      \"line\": 2,\n" +
+                "      \"result\": {\n" +
+                "        \"status\": \"%s\",\n" +
+                "        \"duration\": 1000000000\n" +
+                "      }\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"tags\": [\n" +
+                "    {\n" +
+                "      \"name\": \"@android\",\n" +
+                "      \"line\": 1\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"status\": \"%s\",\n" +
+                "  \"timestamp\": \"%s\",\n" +
+                "  \"message\": \"%s\"\n" +
+                "}", status.toLowerCase(), status.toLowerCase(), timestamp, message);
+            
+            // Write Cucumber JSON report
+            File cucumberDir = new File("target/cucumber-reports");
+            cucumberDir.mkdirs();
+            FileUtils.writeStringToFile(new File(cucumberDir, "android-cucumber.json"), cucumberJson, "UTF-8");
+            
+            // Generate Cucumber HTML report
+            String cucumberHtml = String.format(
+                "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "    <title>Android Test Report</title>\n" +
+                "    <style>\n" +
+                "        body { font-family: Arial, sans-serif; margin: 20px; }\n" +
+                "        .header { background-color: #f0f0f0; padding: 10px; border-radius: 5px; }\n" +
+                "        .scenario { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }\n" +
+                "        .pass { background-color: #d4edda; border-color: #c3e6cb; }\n" +
+                "        .fail { background-color: #f8d7da; border-color: #f5c6cb; }\n" +
+                "        .timestamp { color: #666; font-size: 0.9em; }\n" +
+                "    </style>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    <div class=\"header\">\n" +
+                "        <h1>Android Automation Test Report</h1>\n" +
+                "        <p>Generated on: %s</p>\n" +
+                "    </div>\n" +
+                "    <div class=\"scenario %s\">\n" +
+                "        <h2>Android Login Test</h2>\n" +
+                "        <p><strong>Status:</strong> %s</p>\n" +
+                "        <p><strong>Message:</strong> %s</p>\n" +
+                "        <p class=\"timestamp\">Executed at: %s</p>\n" +
+                "    </div>\n" +
+                "</body>\n" +
+                "</html>", timestamp, status.toLowerCase(), status, message, timestamp);
+            
+            FileUtils.writeStringToFile(new File(cucumberDir, "android-cucumber-report.html"), cucumberHtml, "UTF-8");
+            
+        } catch (IOException e) {
+            System.err.println("Failed to generate Cucumber report: " + e.getMessage());
+        }
     }
 
     private void captureScreenshot(String tag) throws IOException {

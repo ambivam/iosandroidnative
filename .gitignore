@@ -54,7 +54,7 @@ allure-report/
 screenshots/
 pagesource/
 *.png
-*.xml
+#*.xml
 *.mp4
 *.mov
 

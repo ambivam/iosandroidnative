@@ -15,20 +15,28 @@ public class Hooks {
     
     private static final Logger logger = LogManager.getLogger(Hooks.class);
     
-    @Before
+    @Before("@ios or @android")
     public void setUp(Scenario scenario) throws MalformedURLException {
         logger.info("Setting up test environment for scenario: " + scenario.getName());
         
+        // Determine platform from scenario tags
+        String platform = "iOS"; // Default
+        if (scenario.getSourceTagNames().contains("@android")) {
+            platform = "Android";
+        }
+        
+        logger.info("Detected platform: " + platform + " for scenario: " + scenario.getName());
+        
         try {
-            DriverManager.initializeDriver();
-            logger.info("Driver initialized successfully for scenario: " + scenario.getName());
+            DriverManager.initializeDriver(platform);
+            logger.info("Driver initialized successfully for platform: " + platform + ", scenario: " + scenario.getName());
         } catch (Exception e) {
-            logger.error("Failed to initialize driver for scenario: " + scenario.getName(), e);
+            logger.error("Failed to initialize driver for platform: " + platform + ", scenario: " + scenario.getName(), e);
             throw e;
         }
     }
     
-    @After
+    @After("@ios or @android")
     public void tearDown(Scenario scenario) {
         logger.info("Tearing down test environment for scenario: " + scenario.getName());
         
